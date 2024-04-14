@@ -4,12 +4,12 @@ class AppProgressButton extends StatefulWidget {
   final String? text;
   final Widget? child;
   final double? width;
-  flutterfire configure --project=carde-5436a final double? height;
   final Color? backgroundColor;
   final Color? progressIndicatorColor;
   final bool? isBordered;
   final Color? textColor;
   final double? fontSize;
+  final double? height;
   final double? radius;
   final double? elevation;
   final EdgeInsets? padding;

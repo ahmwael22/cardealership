@@ -8,9 +8,9 @@ import '../widgets/app_progress_button.dart';
 import '../widgets/custom_text_form.dart';
 
 class RegisterScreen extends StatelessWidget {
-  RegisterScreen({super.key});
+  RegisterScreen({Key? key});
 
-  final authController = Get.find<AuthController>();
+  final AuthController authController = Get.find<AuthController>();
 
   @override
   Widget build(BuildContext context) {
@@ -141,20 +141,23 @@ class RegisterScreen extends StatelessWidget {
                     text: "REGISTER",
                     fontSize: 18,
                     radius: 30,
-                    onPressed: (animationController) {
+                    onPressed: (animationController) async {
                       animationController.forward();
-                      Future.delayed(
-                        const Duration(seconds: 1),
-                        () {
-                          animationController.reverse();
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => const HomeScreen(),
-                            ),
-                          );
-                        },
-                      );
+                      // Call the function to add account to Firebase
+                      bool success = await authController.addAccountToFirebase();
+                      if (success) {
+                        // If registration is successful, navigate to the home screen
+                        Navigator.pushReplacementNamed(context, HOME);
+                      } else {
+                        // Handle registration failure
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(
+                            content: Text("Registration failed"),
+                            backgroundColor: Colors.red,
+                          ),
+                        );
+                      }
+                      animationController.reverse();
                     },
                   ),
                 ),
@@ -165,7 +168,7 @@ class RegisterScreen extends StatelessWidget {
                   },
                   child: const Center(
                     child: Text(
-                      "Don' thave an account? Login",
+                      "Don't have an account? Login",
                       style: TextStyle(
                         color: Colors.white,
                         fontSize: 16,

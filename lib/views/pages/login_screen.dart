@@ -9,9 +9,11 @@ import '../widgets/custom_text_form.dart';
 import '../widgets/social_button.dart';
 
 class LoginScreen extends StatelessWidget {
-  LoginScreen({super.key});
-  final authController =
-      Get.put<AuthController>(AuthController(), permanent: true);
+  LoginScreen({Key? key}) : super(key: key);
+
+  final AuthController authController =
+  Get.put<AuthController>(AuthController(), permanent: true);
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -36,7 +38,7 @@ class LoginScreen extends StatelessWidget {
                 Row(
                   children: [
                     Text("CAR ZONE",
-                        style: Theme.of(context).textTheme.bodyLarge),
+                        style: Theme.of(context).textTheme.bodyText1),
                     horizontalSpace(12),
                     const Icon(
                       FontAwesomeIcons.hand,
@@ -45,7 +47,7 @@ class LoginScreen extends StatelessWidget {
                   ],
                 ),
                 verticalSpace(50),
-                Text("LOGIN", style: Theme.of(context).textTheme.bodyLarge),
+                Text("LOGIN", style: Theme.of(context).textTheme.headline4),
                 verticalSpace(50),
                 CustomTextFormField(
                   controller: authController.loginEmailController,
@@ -82,22 +84,32 @@ class LoginScreen extends StatelessWidget {
                     text: "LOGIN",
                     fontSize: 18,
                     radius: 30,
-                    onPressed: (animationController) {
+                    onPressed: (animationController) async {
                       animationController.forward();
-                      //call here your firebase logic
-                      bool acountIsExist = authController.loginAcountIsExist();
-                      if (acountIsExist) {
-                        // if the user has the acount
+                      String email =
+                          authController.loginEmailController.text;
+                      bool accountExists =
+                      await authController.loginAcountIsExist(email);
+                      if (accountExists) {
+                        // if the user has the account
                         Future.delayed(
                           const Duration(seconds: 1),
-                          () {
+                              () {
                             animationController.reverse();
-                            Get.offNamed(HOME);
+                            Navigator.of(context)
+                                .pushReplacementNamed(HOME); // Navigate to home screen
                           },
                         );
                       } else {
-                        // if not
-                        print("account dose not exist");
+                        // if not, show error message
+                        animationController.reverse();
+                        // Show error message
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(
+                            content: Text("Account does not exist"),
+                            backgroundColor: Colors.red,
+                          ),
+                        );
                       }
                     },
                   ),
@@ -114,7 +126,7 @@ class LoginScreen extends StatelessWidget {
                   ),
                 ),
                 verticalSpace(20),
-                const Row(
+                Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     SocialButton(
@@ -145,7 +157,7 @@ class LoginScreen extends StatelessWidget {
                   },
                   child: const Center(
                     child: Text(
-                      "Don' thave an account? Signup",
+                      "Don't have an account? Signup",
                       style: TextStyle(
                         color: Color.fromARGB(255, 237, 6, 6),
                         fontSize: 16,

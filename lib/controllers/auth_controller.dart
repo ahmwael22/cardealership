@@ -1,27 +1,25 @@
-import 'package:firebase_auth/firebase_auth.dart';
-import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
 class AuthController extends GetxController {
-  //login Screen text editng Controllers
+  //login Screen text editing Controllers
   final TextEditingController loginEmailController = TextEditingController();
   final TextEditingController loginPasswordController = TextEditingController();
 
   //Register screen text editing controllers
   final TextEditingController registerFirstNameController =
-      TextEditingController();
+  TextEditingController();
   final TextEditingController registerLastNameController =
-      TextEditingController();
+  TextEditingController();
   final TextEditingController registerEmailController = TextEditingController();
   final TextEditingController registerPasswordController =
-      TextEditingController();
+  TextEditingController();
   final TextEditingController registerConfirmPasswordController =
-      TextEditingController();
+  TextEditingController();
 
   String loginEmailText() {
     return loginEmailController.text;
-
   }
 
   String loginPasswordText() {
@@ -48,12 +46,37 @@ class AuthController extends GetxController {
     return registerConfirmPasswordController.text;
   }
 
-  // write here your firebase logic
-  bool loginAcountIsExist() {
-    return true;
+  // Function to check if login account exists
+  Future<bool> loginAcountIsExist(String email) async {
+    try {
+      UserCredential userCredential = await FirebaseAuth.instance.signInWithEmailAndPassword(
+        email: email,
+        password: loginPasswordText(), // Use the password from the login controller
+      );
+      // Account exists, sign out the user
+      await FirebaseAuth.instance.signOut();
+      return true;
+    } catch (e) {
+      // Account doesn't exist or other error occurred
+      return false;
+    }
   }
 
-  bool addAccountToFirebase() {
-    return true;
+  // Function to add account to Firebase
+  Future<bool> addAccountToFirebase() async {
+    try {
+      await FirebaseAuth.instance.createUserWithEmailAndPassword(
+        email: registerEmailText(),
+        password: registerPasswordTextText(),
+      );
+      // Account created successfully
+      return true;
+    } catch (e) {
+      // Handle account creation failure
+      print("Error creating account: $e");
+      return false;
+    }
   }
+
 }
+
